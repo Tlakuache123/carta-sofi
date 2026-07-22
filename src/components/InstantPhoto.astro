@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  note?: string;
+  date?: string;
+  dateTime?: string;
+  aspect?: 'square' | 'portrait' | 'landscape';
+  size?: 'small' | 'medium' | 'large';
+  paper?: 'white' | 'cream';
+  rotation?: number;
+  tape?: boolean;
+  pixelated?: boolean;
+  loading?: 'eager' | 'lazy';
+  class?: string;
+}
+
+const { src, alt, note, date, dateTime, aspect = 'square', size = 'medium', paper = 'white', rotation = -2, tape = false, pixelated = false, loading = 'lazy', class: className } = Astro.props;
+const localImage = typeof src !== 'string';
+---
+
+<figure class:list={['instant-photo', `is-${aspect}`, `is-${size}`, `is-${paper}`, { 'is-pixelated': pixelated }, className]} style={`--rotation:${rotation}deg`}>
+  {tape && <span class="tape" aria-hidden="true"></span>}
+  <div class="photo-window">
+    {localImage ? <Image src={src} alt={alt} widths={[320, 480, 640]} sizes="(max-width: 480px) 78vw, 360px" loading={loading} /> : <img src={src} alt={alt} loading={loading} />}
+  </div>
+  {(note || date) && <figcaption>{note && <span class="note">{note}</span>}{date && <time datetime={dateTime}>{date}</time>}</figcaption>}
+</figure>
+
+<style>
+  .instant-photo { --paper:#fff; width:min(78vw, 22rem); margin:1.5rem auto; padding:.75rem .75rem 1.4rem; color:#27221e; background:var(--paper); box-shadow:0 1.1rem 2.3rem #24171035, 0 .15rem .35rem #24171024; transform:rotate(var(--rotation)); transition:transform .25s ease; position:relative; }
+  .instant-photo:hover { transform:rotate(0) translateY(-.2rem); }
+  .is-cream { --paper:#fff8e8; }
+  .is-small { max-width:15rem; } .is-medium { max-width:22rem; } .is-large { max-width:29rem; }
+  .photo-window { overflow:hidden; background:#d8d2c7; position:relative; aspect-ratio:1; }
+  .is-portrait .photo-window { aspect-ratio:4/5; } .is-landscape .photo-window { aspect-ratio:4/3; }
+  .photo-window::after { content:''; position:absolute; inset:0; background:linear-gradient(125deg,#fff2 0 22%,transparent 42%); pointer-events:none; }
+  .photo-window :global(img) { display:block; width:100%; height:100%; object-fit:cover; }
+  .is-pixelated .photo-window :global(img) { image-rendering:pixelated; }
+  figcaption { min-height:3.3rem; padding:.85rem .5rem 0; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .note { font-family:'Segoe Print','Bradley Hand',cursive; font-size:clamp(1rem,4.5vw,1.35rem); line-height:1.25; }
+  time { margin-top:.35rem; font: .7rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.08em; opacity:.55; }
+  .tape { position:absolute; z-index:2; width:42%; height:1.6rem; top:-.75rem; left:29%; background:#eadcadb8; box-shadow:0 1px 3px #0002; transform:rotate(2deg); }
+  @media (prefers-reduced-motion:reduce) { .instant-photo { transition:none; } .instant-photo:hover { transform:rotate(var(--rotation)); } }
+</style>

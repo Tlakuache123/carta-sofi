@@ -1,0 +1,15 @@
+---
+import '../styles/rich-text.css';
+import { renderBBCode } from '../lib/rich-text-bbcode';
+
+interface Props {
+  text: string;
+  as?: 'div' | 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  class?: string;
+  label?: string;
+}
+
+const { text, as: Tag = 'span', class: className, label } = Astro.props;
+---
+
+<Tag class={className} data-rich-text aria-label={label} set:html={renderBBCode(text)} />

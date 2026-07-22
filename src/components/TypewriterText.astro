@@ -1,0 +1,32 @@
+---
+import '../styles/rich-text.css';
+import { bbCodeToText, renderBBCode, renderTextAsCharacters } from '../lib/rich-text-bbcode';
+interface Props { text?:string; messages?:string[]; bbcode?:boolean; as?:'div'|'p'|'span'|'h1'|'h2'|'h3'|'h4'|'h5'|'h6'; class?:string; label?:string; speed?:number; delay?:number; humanize?:number; punctuationPause?:number; cursor?:boolean; cursorCharacter?:string; loop?:boolean; loopDelay?:number; startWhenVisible?:boolean; controls?:boolean; advanceOnClick?:boolean; clickToSkip?:boolean; nextLabel?:string; }
+const { text='', messages, bbcode=false, as:Tag='div', class:className, label, speed=38, delay=250, humanize=12, punctuationPause=180, cursor=true, cursorCharacter='▌', loop=false, loopDelay=1200, startWhenVisible=true, controls=false, advanceOnClick=false, clickToSkip=true, nextLabel='Toca para continuar' } = Astro.props;
+const list = messages?.length ? messages : [text];
+const rendered = list.map(value => ({ html:bbcode ? renderBBCode(value,{splitAll:true}) : renderTextAsCharacters(value), label:bbcode ? bbCodeToText(value) : value }));
+---
+<sofi-typewriter-text class:list={['typewriter',className]} data-speed={speed} data-delay={delay} data-humanize={humanize} data-punctuation-pause={punctuationPause} data-loop={loop} data-loop-delay={loopDelay} data-visible={startWhenVisible} data-advance={advanceOnClick} data-skip={clickToSkip} tabindex={advanceOnClick?'0':undefined} role={advanceOnClick?'button':undefined} aria-label={label ?? (advanceOnClick?'Diálogo interactivo':undefined)}>
+  <Tag data-typewriter-output data-rich-text aria-hidden="true"></Tag>{cursor&&<span class="cursor" aria-hidden="true">{cursorCharacter}</span>}
+  <span class="sr-only" aria-live="polite" aria-atomic="true"></span>{advanceOnClick&&<span class="next-hint" aria-hidden="true">{nextLabel}</span>}{controls&&<button class="replay" type="button">Repetir</button>}
+  {rendered.map(item=><template data-message data-label={item.label}><Fragment set:html={item.html}/></template>)}<noscript>{list.join('\n')}</noscript>
+</sofi-typewriter-text>
+<script>
+class SofiTypewriterText extends HTMLElement {
+ output!:HTMLElement; live!:HTMLElement; templates:HTMLTemplateElement[]=[]; chars:HTMLElement[]=[]; index=0; charIndex=0; timer=0; complete=false; started=false; reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ connectedCallback(){this.output=this.querySelector('[data-typewriter-output]')!;this.live=this.querySelector('.sr-only')!;this.templates=[...this.querySelectorAll('template[data-message]')];this.querySelector('.replay')?.addEventListener('click',e=>{e.stopPropagation();this.restart()});if(this.dataset.advance==='true'){this.addEventListener('click',()=>this.advance());this.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();this.advance()}})}this.load(0);if(this.dataset.visible==='true'&&'IntersectionObserver'in window){const observer=new IntersectionObserver(([entry])=>{if(entry.isIntersecting){observer.disconnect();this.play()}},{threshold:.15});observer.observe(this)}else this.play()}
+ disconnectedCallback(){clearTimeout(this.timer)}
+ number(name:string,fallback:number){const value=Number(this.dataset[name]);return Number.isFinite(value)?value:fallback}
+ emit(name:string){this.dispatchEvent(new CustomEvent(`typewriter:${name}`,{detail:{index:this.index,count:this.templates.length}}))}
+ load(index:number){clearTimeout(this.timer);this.index=index;this.charIndex=0;this.complete=false;this.started=false;this.classList.remove('is-complete');this.output.replaceChildren(this.templates[index].content.cloneNode(true));this.chars=[...this.output.querySelectorAll('.rt-char')];this.chars.forEach(char=>char.hidden=true);this.live.textContent='';this.updateNextState()}
+ play(){if(this.started||this.complete)return;this.started=true;this.emit('start');if(this.reduced){this.finish();return}this.timer=window.setTimeout(()=>this.tick(),this.number('delay',250))}
+ tick(){const char=this.chars[this.charIndex];if(!char){this.finish();return}char.hidden=false;this.emit('character');this.charIndex++;const punctuation=/[.,!?;:…]/.test(char.textContent??'')?this.number('punctuationPause',180):0;const variation=(Math.random()*2-1)*this.number('humanize',12);this.timer=window.setTimeout(()=>this.tick(),Math.max(5,this.number('speed',38)+variation+punctuation))}
+ finish(){clearTimeout(this.timer);this.chars.forEach(char=>char.hidden=false);this.charIndex=this.chars.length;this.complete=true;this.started=true;this.classList.add('is-complete');this.live.textContent=this.templates[this.index].dataset.label??'';this.updateNextState();this.emit('message');if(this.dataset.loop==='true'&&this.index===this.templates.length-1)this.timer=window.setTimeout(()=>this.restart(),this.number('loopDelay',1200))}
+ advance(){if(!this.complete){if(this.dataset.skip==='true')this.finish();return}if(this.index<this.templates.length-1){this.load(this.index+1);this.play()}else this.emit('sequence-complete')}
+ updateNextState(){this.classList.toggle('has-next',this.index<this.templates.length-1)} restart(){this.load(0);this.play()} next(){if(!this.complete)this.finish();this.advance()} skip(){this.finish()} reset(){this.load(0)}
+}
+if(!customElements.get('sofi-typewriter-text'))customElements.define('sofi-typewriter-text',SofiTypewriterText);
+</script>
+<style>
+.typewriter{display:inline-flex;align-items:flex-end;position:relative;max-width:100%}[data-typewriter-output]{min-width:0}.cursor{animation:blink .85s steps(1) infinite;margin-left:.08em}.next-hint{display:none;position:absolute;right:0;bottom:-1.65rem;font-size:.7rem;opacity:.65;white-space:nowrap}.is-complete.has-next .next-hint{display:block}.replay{margin-left:.8rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.typewriter[data-advance='true']{cursor:pointer;touch-action:manipulation;min-height:44px}@keyframes blink{50%{opacity:0}}@media(prefers-reduced-motion:reduce){.cursor{animation:none}}
+</style>
