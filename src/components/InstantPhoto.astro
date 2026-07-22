@@ -31,7 +31,7 @@ const localImage = typeof src !== 'string';
 </figure>
 
 <style>
-  .instant-photo { --paper:#fff; width:min(78vw, 22rem); margin:1.5rem auto; padding:.75rem .75rem 1.4rem; color:#27221e; background:var(--paper); box-shadow:0 1.1rem 2.3rem #24171035, 0 .15rem .35rem #24171024; transform:rotate(var(--rotation)); transition:transform .25s ease; position:relative; }
+  .instant-photo { --paper:var(--photo-paper,#fff); width:min(78vw, 22rem); margin:1.5rem auto; padding:.75rem .75rem 1.4rem; color:#27221e; background:var(--paper); box-shadow:var(--shadow-soft,0 1.1rem 2.3rem #24171035); transform:rotate(var(--rotation)); transition:transform var(--motion-normal,.25s) ease; position:relative; }
   .instant-photo:hover { transform:rotate(0) translateY(-.2rem); }
   .is-cream { --paper:#fff8e8; }
   .is-small { max-width:15rem; } .is-medium { max-width:22rem; } .is-large { max-width:29rem; }

@@ -1,0 +1,6 @@
+---
+interface Props{page?:number;totalPages?:number;label?:string;width?:'reading'|'wide';class?:string}
+const{page,totalPages,label,width='reading',class:className}=Astro.props;
+---
+<main id="contenido" class:list={['letter-page',`is-${width}`,className]}>{(label||(page&&totalPages))&&<header class="page-context"><span>{label}</span>{page&&totalPages&&<span>{String(page).padStart(2,'0')} / {String(totalPages).padStart(2,'0')}</span>}</header>}<div class="page-content"><slot/></div></main>
+<style>.letter-page{width:min(100% - (var(--page-gutter)*2),var(--content-width));min-height:calc(100svh - var(--navigation-height));margin:0 auto;padding:clamp(2.5rem,9vh,6rem) 0 calc(var(--navigation-height) + 3rem)}.letter-page.is-wide{width:min(100% - (var(--page-gutter)*2),var(--wide-width))}.page-context{margin-bottom:clamp(3rem,9vh,6rem);padding-bottom:.8rem;display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--color-line);color:var(--color-muted);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase}.page-content{display:flex;flex-direction:column;gap:var(--section-space)}</style>

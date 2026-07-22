@@ -1,0 +1,132 @@
+---
+import LetterLayout from "../../layouts/LetterLayout.astro";
+import LetterPage from "../../components/LetterPage.astro";
+import StorySection from "../../components/StorySection.astro";
+import PageNavigation from "../../components/PageNavigation.astro";
+import InstantPhoto from "../../components/InstantPhoto.astro";
+import PhotoRow from "../../components/PhotoRow.astro";
+import RichTextLabel from "../../components/RichTextLabel.astro";
+import pre_boda from "../../assets/pre_boda.jpeg";
+import xochi from "../../assets/xochi.jpeg";
+import lobos from "../../assets/lobos.jpeg";
+import guadalajara from "../../assets/guadalajara.jpeg";
+import bosque from "../../assets/bosque.jpeg";
+import AudioPlayer from "../../components/AudioPlayer.astro";
+import pageMusic from "../../assets/music/home.mp3";
+import TerminalWindow from "../../components/TerminalWindow.astro";
+import TypewriterText from "../../components/TypewriterText.astro";
+---
+
+<LetterLayout
+  title="Un instante — Carta para Sofi"
+  theme="base"
+  pageClass="page-two"
+>
+  <LetterPage page={2} totalPages={3} label="Presente" width="wide">
+    <StorySection align="center" spacing="large">
+      <h1>Y conforme fue pasando el tiempo...</h1>
+      <RichTextLabel
+        as="p"
+        text="Empezamos a convivir mas, estuviste conmigo en momentos dificiles, nos vimos crecer, cambiar, [shake]enfermarnos del estomago[/shake], descubrir las buzball, ir a Guadalajara, ver icebergs, etc."
+      />
+
+      <InstantPhoto
+        src={pre_boda}
+        alt="Retrato de Sofi"
+        note="Foto de Sofi y Claudio elegantes"
+        date="2026"
+        tape
+        rotation={1}
+      />
+      <RichTextLabel
+        as="p"
+        class="note"
+        text="Nota: Fui muy feliz regresando de Brasil y que lo primero que vi fue a ti con un ramo de flores, cilantro y una quesadilla <3"
+      />
+      <RichTextLabel
+        as="p"
+        class="note"
+        text="[shake]Nota 2: Dios debio deberme algo muy grande como para pagarme juntando nuestras vidas, eres lo mas bonito que me vino a traer la vida[/shake]"
+      />
+    </StorySection>
+
+    <StorySection spacing="large">
+      <RichTextLabel as="h2" text="Y [pulse]eventualmente...[/pulse]" />
+      <p>
+        Con forme el tiempo pasaba, todo mundo decia que nos veiamos muy bien
+        juntos, y que nos veian como una pareja. Y si bien, al principio
+        teniamos que inventar que eramos una pareja swingger jsjsjs, poco a poco
+        estaban empezando a surgir algo...
+      </p>
+      <PhotoRow label="Recuerdos de Sofi" size="small">
+        <InstantPhoto src={bosque} alt="Retrato de Sofi" tape rotation={2} />
+        <InstantPhoto
+          src={guadalajara}
+          alt="Retrato de Sofi"
+          tape
+          rotation={-3}
+        />
+        <InstantPhoto src={xochi} alt="Retrato de Sofi" tape rotation={-1} />
+        <InstantPhoto src={lobos} alt="Retrato de Sofi" tape rotation={-2} />
+      </PhotoRow>
+
+      <TerminalWindow title="Sentimientos">
+        <TypewriterText
+          bbcode
+          messages={[
+            "> Ya se que muchas veces lo he dicho, pero me gusta mucho recordar cuando hice clic [shake]*ya me puse nervioso*[/shake]",
+            "> Recuerdo que estabamos viendo un video sobre un iceberg de teorias conspirativas, y habia un punto que trataba sobre dragones\n> Muy normal en nosotros la situacion jsjs",
+            "> Y yo empece a contar mis teorias sobre los dragones, pero limite lo que queria decir para no aburrirte\n> ENTONCES TU ME DIJISTE EXACTAMENTE LO QUE YO ESTABA PENSANDO",
+            "> [shake]Ahi senti el verdadero clic, me gusta muchisisimo esta mujer!!![/shake]\n> Empece a notar que me gustabas mas de lo que yo mismo pensaba",
+            "> Y bueno, ya sabemos el resto de la historia jsjs y como me auto exilie por miedo a no poder estar contigo\n[rainbow]> Gracias por evitar que hiciera eso[/rainbow]",
+          ]}
+          speed={32}
+          punctuationPause={150}
+          advanceOnClick
+          clickToSkip
+          nextLabel="Toca para continuar ▾"
+        />
+      </TerminalWindow>
+    </StorySection>
+  </LetterPage>
+
+  <PageNavigation
+    current={2}
+    total={3}
+    previous={{ href: "/", label: "Portada" }}
+    next={{ href: "/carta/3" }}
+  >
+    <AudioPlayer
+      slot="media"
+      src={pageMusic}
+      title="The Legend"
+      variant="compact"
+      autoplay
+      startOnInteraction
+      loop
+    />
+  </PageNavigation>
+</LetterLayout>
+<style is:global>
+  .page-two {
+    --color-canvas: #eef0ed;
+    --color-surface-muted: #dfe4df;
+    --photo-paper: #fff;
+    --section-space: clamp(4rem, 11vh, 7rem);
+  }
+</style>
+<style>
+  .photo-space {
+    width: 100%;
+    min-height: 32rem;
+    padding: 2rem 0;
+    background: var(--color-surface-muted);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+  }
+
+  .note {
+    color: var(--color-muted);
+    font-size: 0.95rem !important;
+  }
+</style>

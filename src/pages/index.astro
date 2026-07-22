@@ -1,23 +1,100 @@
 ---
-import RichTextLabel from '../components/RichTextLabel.astro';
-import TypewriterText from '../components/TypewriterText.astro';
-import InstantPhoto from '../components/InstantPhoto.astro';
-import sofiPortrait from '../assets/sofi_portrait.png';
+import LetterLayout from "../layouts/LetterLayout.astro";
+import LetterPage from "../components/LetterPage.astro";
+import StorySection from "../components/StorySection.astro";
+import PageNavigation from "../components/PageNavigation.astro";
+import RichTextLabel from "../components/RichTextLabel.astro";
+import InstantPhoto from "../components/InstantPhoto.astro";
+import inicio from "../assets/inicio.jpeg";
+import TerminalWindow from "../components/TerminalWindow.astro";
+import TypewriterText from "../components/TypewriterText.astro";
 ---
-<html lang="es"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="generator" content={Astro.generator}/><title>Laboratorio de componentes</title></head>
-<body><main>
- <header><p class="eyebrow">carta-sofi / componentes</p><h1>Pequeños recuerdos interactivos</h1></header>
- <section><h2>RichTextLabel</h2><div class="card rich-demo">
-  <RichTextLabel as="p" text="Los espacios  dobles  siguen aquí."/>
-  <RichTextLabel as="p" text="[wave]Un texto que se ondea[/wave] y [shake]otro que vibra[/shake]."/>
-  <RichTextLabel as="p" text="[rainbow]Todos los colores[/rainbow] junto a un [pulse]latido suave[/pulse]."/>
-  <RichTextLabel as="p" text="También acepta [b]negritas[/b], [i]cursivas[/i], [u]subrayado[/u] y [color=#d55d7b]color[/color]."/>
- </div></section>
- <section><h2>Terminal con diálogo</h2><div class="terminal" aria-label="Demostración de terminal"><div class="terminal-bar"><i></i><i></i><i></i><span>recuerdo.txt</span></div>
-  <TypewriterText class="terminal-body" bbcode messages={['> Iniciando archivo de recuerdos...\n[wave]Hola, Sofi.[/wave] Encontré algo para ti.','> Hay palabras que [rainbow]cambian de color[/rainbow], pero no pierden su significado.','> Fin del archivo. [pulse]Nos vemos en el siguiente recuerdo ♥[/pulse]']} speed={30} punctuationPause={140} advanceOnClick clickToSkip nextLabel="Toca para continuar ▾"/>
- </div><p class="help">Un toque completa la frase; el siguiente muestra el próximo mensaje.</p></section>
- <section><h2>Fotografía instantánea</h2><div class="photo-stage"><InstantPhoto src={sofiPortrait} alt="Retrato de Sofi" note="Un instante para guardar ♥" date="Verano, 2026" aspect="portrait" paper="cream" tape rotation={-3}/></div></section>
-</main></body></html>
-<style is:global>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#382f35;background:#f8f1ed}*{box-sizing:border-box}body{margin:0;min-width:320px;background:radial-gradient(circle at 100% 0,#f5dce3 0,transparent 35rem),#f8f1ed}main{width:min(100% - 2rem,56rem);margin:auto;padding:3rem 0 6rem}header{margin-bottom:3.5rem}h1{max-width:14ch;margin:.3rem 0;font-family:Georgia,serif;font-size:clamp(2.25rem,10vw,4.8rem);line-height:.95;letter-spacing:-.04em}h2{margin:3rem 0 1rem;font-size:.8rem;text-transform:uppercase;letter-spacing:.14em}.eyebrow,.help{color:#806f78;font-size:.8rem}.card{padding:1.2rem;border:1px solid #e4d5da;border-radius:1rem;background:#fffaf8cc;box-shadow:0 .6rem 2rem #6942530c}.rich-demo p{margin:.45rem 0;line-height:1.8}.terminal{overflow:hidden;color:#d5f7df;background:#101713;border:1px solid #28382e;border-radius:.8rem;box-shadow:0 1rem 2.5rem #16241c2d}.terminal-bar{min-height:2.5rem;padding:.7rem .8rem;display:flex;align-items:center;gap:.45rem;color:#8fa397;background:#1a241e;font:.68rem/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace}.terminal-bar i{width:.65rem;height:.65rem;border-radius:50%;background:#e26c70}.terminal-bar i:nth-child(2){background:#e8bc61}.terminal-bar i:nth-child(3){background:#70bd7b}.terminal-bar span{margin-left:.4rem}.terminal-body{width:100%;min-height:9.5rem;padding:1.25rem 1.1rem 2rem;align-items:flex-start;font:clamp(.86rem,3.8vw,1rem)/1.75 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;overflow-wrap:anywhere}.terminal-body [data-typewriter-output]{flex:1}.terminal-body .next-hint{right:1.1rem;bottom:.55rem}.help{text-align:center}.photo-stage{min-height:31rem;padding:2rem 0;display:grid;place-items:center;border-radius:1.5rem;background:linear-gradient(135deg,#dce8df,#eadde1);overflow:hidden}@media(min-width:700px){main{padding-top:5rem}.card{padding:1.6rem}.terminal-body{padding:1.6rem 1.5rem 2.4rem}.photo-stage{min-height:38rem}}
-</style>
+
+<LetterLayout
+  title="Inicio — Carta para Sofi"
+  theme="contrast"
+  pageClass="page-home"
+>
+  <LetterPage label="Inicio">
+    <StorySection spacing="large">
+      <p class="kicker">Bienvenidos sean, hoy presentamos...</p>
+      <RichTextLabel as="h1" text="Una carta para [rainbow]Sofi[/rainbow]" />
+      <RichTextLabel
+        as="p"
+        text={"Hola buenos dias, tardes o noches, este es [shake rate=6 level=2]*se pone nervioso*[/shake] un pequeño detalle para la mujer que me gusta"}
+      />
+      <InstantPhoto
+        src={inicio}
+        alt="Retrato de Sofi"
+        note="Esta bien guapota Sofi <3"
+        aspect="portrait"
+        tape
+        rotation={3}
+      />
+      <p class="note">Nota: Al autor le gusta mucho Sofi.</p>
+    </StorySection>
+    <!-- Insertar tutorial sobre comandos, botones, etc -->
+    <StorySection spacing="compact">
+      <TerminalWindow title="Tutorial">
+        <TypewriterText
+          bbcode
+          messages={[
+            "> Estableciendo conexion[wave]...[/wave]\n> Conexion establecida[wave]...[/wave]\n> Hola [color=#ff8cc8]Sofi[/color]!, haz clic para avanzar al siguiente dialogo",
+            "> Durante este tutorial puedes hacer clic en cualquier parte del area central para avanzar al siguiente dialogo.\n> [shake]Vamos hazlo![/shake]",
+            "> Abajo encontraras botones para navegar al anterior dialogo\n> O reiniciar la conversacion desde el principio",
+            "> [rainbow speed=.5 freq=1.3 sat=.85 val=.65]Fin del tutorial.[/rainbow]\n> Te amo Chofis [color=#ff8cc8]<3[/color]",
+          ]}
+          speed={32}
+          punctuationPause={150}
+          advanceOnClick
+          clickToSkip
+          nextLabel="Toca para continuar ▾"
+        />
+      </TerminalWindow>
+    </StorySection>
+
+    <StorySection align="center" spacing="compact">
+      <RichTextLabel
+        as="h3"
+        text="Asegurate de tener el volumen activado antes de empezar."
+      />
+      <RichTextLabel
+        as="p"
+        class="note"
+        text="Si no escuchas nada, quizas padezcas de [wave]sordera[/wave] y nunca te diagnosticaron bien"
+      />
+      <a class="start" href="/carta/1">Comenzar</a>
+    </StorySection>
+
+    <PageNavigation next={{ href: "/carta/1", label: "Comenzar" }} />
+  </LetterPage>
+  <style>
+    .kicker {
+      color: var(--color-muted);
+      font-size: 0.72rem !important;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .start {
+      min-height: 48px;
+      padding: 0.75rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: var(--color-accent-contrast);
+      background: var(--color-accent);
+      border-radius: var(--radius-small);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .marker {
+      color: var(--color-muted);
+      font: 0.7rem var(--font-mono);
+      letter-spacing: 0.15em;
+    }
+    .note {
+      color: var(--color-muted);
+      font-size: 0.95rem !important;
+    }
+  </style>
+</LetterLayout>

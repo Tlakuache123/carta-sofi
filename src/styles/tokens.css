@@ -1,0 +1,37 @@
+:root {
+  color-scheme: light;
+  --color-canvas: #f2f2ef;
+  --color-surface: #fff;
+  --color-surface-muted: #e8e8e3;
+  --color-ink: #242524;
+  --color-muted: #70736f;
+  --color-line: #d4d6d1;
+  --color-accent: #4d6558;
+  --color-accent-contrast: #fff;
+  --font-body:
+    "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-display:
+    "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-pixel:
+    "Hope Gold", "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  --content-width: 44rem;
+  --wide-width: 64rem;
+  --page-gutter: clamp(1.1rem, 5vw, 3rem);
+  --section-space: clamp(4rem, 13vh, 8rem);
+  --radius-small: 0.45rem;
+  --radius-medium: 1rem;
+  --shadow-soft: 0 1rem 3rem rgb(20 24 21/0.08);
+  --navigation-height: 4.25rem;
+  --motion-fast: 160ms;
+  --motion-normal: 320ms;
+  --terminal-background: #111613;
+  --terminal-surface: #1b211d;
+  --terminal-foreground: #d7e5dc;
+  --terminal-muted: #8f9f95;
+  --photo-paper: #fff;
+}

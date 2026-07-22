@@ -1,0 +1,130 @@
+---
+interface Props {
+  title?: string;
+  class?: string;
+  controls?: boolean;
+  tapToAdvance?: boolean;
+  previousLabel?: string;
+  restartLabel?: string;
+}
+const {
+  title = 'sesión',
+  class: className,
+  controls = true,
+  tapToAdvance = true,
+  previousLabel = 'Anterior',
+  restartLabel = 'Reiniciar'
+} = Astro.props;
+---
+
+<sofi-terminal-window class:list={['terminal-window', className]} data-tap-to-advance={tapToAdvance}>
+  <header class="terminal-header">
+    <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="terminal-title">{title}</span>
+    {controls && <output class="dialog-position" aria-live="polite" aria-label="Diálogo actual">1 / 1</output>}
+  </header>
+  <div
+    class="terminal-content"
+    tabindex={tapToAdvance ? '0' : undefined}
+    role={tapToAdvance ? 'button' : undefined}
+    aria-label={tapToAdvance ? 'Continuar al siguiente diálogo' : undefined}
+  ><slot /></div>
+  {controls && (
+    <footer class="terminal-controls" aria-label="Controles del diálogo">
+      <button type="button" data-terminal-previous disabled>
+        <span aria-hidden="true">←</span><span>{previousLabel}</span>
+      </button>
+      <button type="button" data-terminal-restart>
+        <span aria-hidden="true">↺</span><span>{restartLabel}</span>
+      </button>
+    </footer>
+  )}
+</sofi-terminal-window>
+
+<script>
+  interface DialogTypewriter extends HTMLElement {
+    index: number;
+    templates: HTMLTemplateElement[];
+    previous(): void;
+    restart(): void;
+    advance(): void;
+  }
+
+  class SofiTerminalWindow extends HTMLElement {
+    typewriter?: DialogTypewriter;
+    previousButton?: HTMLButtonElement;
+    position?: HTMLOutputElement;
+
+    connectedCallback() {
+      customElements.whenDefined('sofi-typewriter-text').then(() => this.connectTypewriter());
+    }
+
+    connectTypewriter() {
+      if (this.dataset.dialogControlsConnected === 'true') return;
+      this.typewriter = this.querySelector<DialogTypewriter>('sofi-typewriter-text') ?? undefined;
+      if (!this.typewriter) {
+        this.querySelector('.terminal-controls')?.setAttribute('hidden', '');
+        return;
+      }
+      this.dataset.dialogControlsConnected = 'true';
+      this.previousButton = this.querySelector<HTMLButtonElement>('[data-terminal-previous]') ?? undefined;
+      this.position = this.querySelector<HTMLOutputElement>('.dialog-position') ?? undefined;
+      this.previousButton?.addEventListener('click', () => this.typewriter?.previous());
+      this.querySelector('[data-terminal-restart]')?.addEventListener('click', () => this.typewriter?.restart());
+      this.typewriter.addEventListener('typewriter:change', () => this.updateControls());
+      this.typewriter.addEventListener('typewriter:message', () => this.updateControls());
+      if (this.dataset.tapToAdvance === 'true') this.connectTapArea();
+      this.updateControls();
+    }
+
+    connectTapArea() {
+      const content = this.querySelector<HTMLElement>('.terminal-content');
+      if (!content || !this.typewriter) return;
+      this.typewriter.tabIndex = -1;
+      this.typewriter.removeAttribute('role');
+      content.addEventListener('click', (event) => {
+        const target = event.target as Element;
+        if (target.closest('sofi-typewriter-text, button, a, input, select, textarea')) return;
+        this.typewriter?.advance();
+      });
+      content.addEventListener('keydown', (event) => {
+        if (event.target !== content || (event.key !== 'Enter' && event.key !== ' ')) return;
+        event.preventDefault();
+        this.typewriter?.advance();
+      });
+    }
+
+    updateControls() {
+      if (!this.typewriter) return;
+      const current = this.typewriter.index + 1;
+      const total = this.typewriter.templates.length;
+      if (this.position) this.position.textContent = `${current} / ${total}`;
+      if (this.previousButton) this.previousButton.disabled = current <= 1;
+    }
+  }
+
+  if (!customElements.get('sofi-terminal-window')) customElements.define('sofi-terminal-window', SofiTerminalWindow);
+</script>
+
+<style>
+  .terminal-window { width:100%; overflow:hidden; display:block; color:var(--terminal-foreground); background:var(--terminal-background); border:1px solid color-mix(in srgb,var(--terminal-foreground) 14%,transparent); border-radius:var(--radius-medium); box-shadow:var(--shadow-soft); font-variant-ligatures:none; font-feature-settings:'liga' 0,'calt' 0; -webkit-user-select:none; user-select:none; }
+  .terminal-header { min-height:2.75rem; padding:.7rem .85rem; display:flex; align-items:center; gap:.8rem; color:var(--terminal-muted); background:var(--terminal-surface); font:.68rem/1 var(--font-mono); }
+  .lights { display:flex; gap:.4rem; }
+  .lights i { width:.62rem; height:.62rem; border-radius:50%; background:currentColor; opacity:.35; }
+  .terminal-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .dialog-position { margin-left:auto; color:inherit; font:inherit; white-space:nowrap; }
+  .terminal-content { min-width:0; min-height:10rem; padding:1.2rem 1rem 2.1rem; font:clamp(.84rem,3.8vw,1rem)/1.75 var(--font-mono); overflow-wrap:normal; word-break:normal; }
+  .terminal-window[data-tap-to-advance='true'] .terminal-content { cursor:pointer; touch-action:manipulation; }
+  .terminal-content :global(sofi-typewriter-text) { width:100%; align-items:flex-start; }
+  .terminal-content :global([data-typewriter-output]) { flex:1; }
+  .terminal-content :global(.next-hint) { right:0; bottom:-1.2rem; }
+  .terminal-controls { min-height:3.65rem; padding:.45rem; display:grid; grid-template-columns:1fr 1fr; gap:.45rem; background:var(--terminal-surface); border-top:1px solid color-mix(in srgb,var(--terminal-foreground) 12%,transparent); }
+  .terminal-controls[hidden] { display:none; }
+  button { min-height:48px; padding:.55rem .8rem; display:flex; align-items:center; justify-content:center; gap:.5rem; color:var(--terminal-foreground); background:transparent; border:1px solid color-mix(in srgb,var(--terminal-foreground) 18%,transparent); border-radius:var(--radius-small); font:700 .76rem/1 var(--font-mono); cursor:pointer; touch-action:manipulation; }
+  button:hover:not(:disabled) { background:color-mix(in srgb,var(--terminal-foreground) 8%,transparent); }
+  button:active:not(:disabled) { transform:translateY(1px); }
+  button:disabled { cursor:not-allowed; opacity:.35; }
+  button span[aria-hidden] { font-size:1rem; }
+  @media (min-width:560px) { .terminal-controls { display:flex; justify-content:flex-end; } button { min-width:9rem; } }
+  @media (prefers-reduced-motion:reduce) { button:active:not(:disabled) { transform:none; } }
+</style>

@@ -1,0 +1,27 @@
+---
+interface Props {
+  label?: string;
+  size?: 'small' | 'medium' | 'large';
+  gap?: 'compact' | 'normal' | 'wide';
+  controls?: boolean;
+  class?: string;
+}
+const { label='Galería de fotografías', size='medium', gap='normal', controls=true, class:className } = Astro.props;
+---
+<sofi-photo-row class:list={['photo-row',`is-${size}`,`gap-${gap}`,className]}>
+  <div class="photo-viewport" role="region" aria-label={label} tabindex="0"><div class="photo-track"><slot/></div></div>
+  {controls&&<nav class="photo-controls" aria-label="Controles de la galería"><button type="button" data-photo-previous aria-label="Ver fotografía anterior" disabled><span aria-hidden="true">←</span></button><button type="button" data-photo-next aria-label="Ver fotografía siguiente"><span aria-hidden="true">→</span></button></nav>}
+</sofi-photo-row>
+<script>
+class SofiPhotoRow extends HTMLElement {
+ viewport!:HTMLElement;previous?:HTMLButtonElement;next?:HTMLButtonElement;resizeObserver?:ResizeObserver;
+ connectedCallback(){if(this.dataset.connected==='true')return;this.dataset.connected='true';this.viewport=this.querySelector('.photo-viewport')!;this.previous=this.querySelector('[data-photo-previous]')??undefined;this.next=this.querySelector('[data-photo-next]')??undefined;this.previous?.addEventListener('click',()=>this.move(-1));this.next?.addEventListener('click',()=>this.move(1));this.viewport.addEventListener('scroll',()=>this.update(),{passive:true});this.viewport.addEventListener('keydown',event=>{if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;event.preventDefault();this.move(event.key==='ArrowLeft'?-1:1)});this.resizeObserver=new ResizeObserver(()=>this.update());this.resizeObserver.observe(this.viewport);requestAnimationFrame(()=>this.update())}
+ disconnectedCallback(){this.resizeObserver?.disconnect()}
+ move(direction:-1|1){const distance=Math.max(220,this.viewport.clientWidth*.78);const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;this.viewport.scrollBy({left:distance*direction,behavior:reduced?'auto':'smooth'})}
+ update(){const maximum=Math.max(0,this.viewport.scrollWidth-this.viewport.clientWidth);const current=this.viewport.scrollLeft;this.classList.toggle('is-static',maximum<=2);if(this.previous)this.previous.disabled=current<=2;if(this.next)this.next.disabled=current>=maximum-2}
+}
+if(!customElements.get('sofi-photo-row'))customElements.define('sofi-photo-row',SofiPhotoRow);
+</script>
+<style>
+.photo-row{--photo-row-size:min(76vw,22rem);--photo-row-gap:1.4rem;width:100%;min-width:0;display:block;position:relative}.photo-row.is-small{--photo-row-size:min(62vw,15rem)}.photo-row.is-large{--photo-row-size:min(84vw,29rem)}.photo-row.gap-compact{--photo-row-gap:.7rem}.photo-row.gap-wide{--photo-row-gap:2.4rem}.photo-viewport{width:100%;min-width:0;padding:2.5rem max(1rem,var(--page-gutter));overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:max(1rem,var(--page-gutter));scrollbar-width:thin;scrollbar-color:var(--color-muted) transparent;overscroll-behavior-inline:contain}.photo-track{width:max-content;min-width:100%;display:flex;align-items:center;gap:var(--photo-row-gap)}.photo-track :global(.instant-photo){flex:0 0 var(--photo-row-size);width:var(--photo-row-size);max-width:var(--photo-row-size);margin:0;scroll-snap-align:center}.photo-track :global(.instant-photo:only-child){margin-inline:auto}.photo-controls{margin-top:.25rem;display:flex;justify-content:center;gap:.55rem}.photo-controls button{width:44px;height:44px;display:grid;place-items:center;color:var(--color-ink);background:var(--color-surface);border:1px solid var(--color-line);border-radius:50%;font:700 1rem/1 var(--font-mono);cursor:pointer;touch-action:manipulation}.photo-controls button:hover:not(:disabled){background:var(--color-surface-muted)}.photo-controls button:disabled{opacity:.3;cursor:not-allowed}.is-static .photo-controls{display:none}@media(min-width:760px){.photo-viewport{padding-block:3rem}}
+</style>

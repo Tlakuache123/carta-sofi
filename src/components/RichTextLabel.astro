@@ -1,15 +1,32 @@
 ---
 import '../styles/rich-text.css';
 import { renderBBCode } from '../lib/rich-text-bbcode';
+import type { HTMLAttributes } from 'astro/types';
 
-interface Props {
+type Props = Omit<HTMLAttributes<'span'>, 'class' | 'aria-label'> & {
   text: string;
   as?: 'div' | 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   class?: string;
+  font?: 'inherit' | 'body' | 'display' | 'pixel' | 'mono';
   label?: string;
-}
+  'aria-label'?: string;
+};
 
-const { text, as: Tag = 'span', class: className, label } = Astro.props;
+const {
+  text,
+  as: Tag = 'span',
+  class: className,
+  font = 'inherit',
+  label,
+  'aria-label': ariaLabel,
+  ...attributes
+} = Astro.props;
 ---
 
-<Tag class={className} data-rich-text aria-label={label} set:html={renderBBCode(text)} />
+<Tag
+  {...attributes}
+  class:list={[className, font !== 'inherit' && `font-${font}`]}
+  data-rich-text
+  aria-label={label ?? ariaLabel}
+  set:html={renderBBCode(text)}
+/>

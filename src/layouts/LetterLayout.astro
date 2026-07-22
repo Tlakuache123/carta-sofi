@@ -1,0 +1,32 @@
+---
+import "../styles/global.css";
+interface Props {
+  title: string;
+  description?: string;
+  theme?: "base" | "soft" | "contrast" | "plain" | "retro";
+  pageClass?: string;
+}
+const {
+  title,
+  description = "Una historia contada página a página.",
+  theme = "base",
+  pageClass,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" data-theme={theme} class={pageClass}>
+  <head
+    ><meta charset="utf-8" /><meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    /><meta name="description" content={description} /><meta
+      name="generator"
+      content={Astro.generator}
+    /><meta name="theme-color" content="var(--color-canvas)" /><title>
+      {title}
+    </title><slot name="head" /></head
+  ><body
+    ><a class="skip-link" href="#contenido">Ir al contenido</a><slot /></body
+  >
+</html>

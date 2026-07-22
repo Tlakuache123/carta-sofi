@@ -1,0 +1,120 @@
+---
+import LetterLayout from "../../layouts/LetterLayout.astro";
+import LetterPage from "../../components/LetterPage.astro";
+import StorySection from "../../components/StorySection.astro";
+import PageNavigation from "../../components/PageNavigation.astro";
+import RichTextLabel from "../../components/RichTextLabel.astro";
+import AudioPlayer from "../../components/AudioPlayer.astro";
+import pageMusic from "../../assets/music/The Legend.mp3";
+import TerminalWindow from "../../components/TerminalWindow.astro";
+import TypewriterText from "../../components/TypewriterText.astro";
+import InstantPhoto from "../../components/InstantPhoto.astro";
+import portrait from "../../assets/sofi_portrait.png";
+import c_portrait from "../../assets/clau_portrait.png";
+import PhotoRow from "../../components/PhotoRow.astro";
+---
+
+<LetterLayout
+  title="El comienzo — Carta para Sofi"
+  theme="retro"
+  pageClass="page-one"
+>
+  <LetterPage page={1} totalPages={3} label="El comienzo">
+    <StorySection spacing="large">
+      <RichTextLabel as="h1" font="pixel" text="El inicio" />
+      <RichTextLabel
+        as="p"
+        text="Esta historia se remonta en los origenes de la edad media, cuando el [wave]mejor consorcio digital[/wave] unio a una pato druida y a un tlacuache mago."
+      />
+      <RichTextLabel
+        as="p"
+        class="custom-effects-label"
+        text="- Como le puedes poner Tajin al chicharron en salsa verde!"
+      />
+      <PhotoRow label="Recuerdos de Sofi" size="small">
+        <InstantPhoto
+          src={portrait}
+          alt="Retrato de Sofi"
+          note="Foto realista de Sofi"
+          date="2024"
+          tape
+          rotation={-2}
+        />
+        <InstantPhoto
+          src={c_portrait}
+          alt="Retrato de Sofi"
+          note="Foto realista de Claudio"
+          date="2024"
+          tape
+          rotation={2}
+        />
+      </PhotoRow>
+    </StorySection>
+
+    <StorySection>
+      <RichTextLabel as="h2" font="pixel" text="Memorias" />
+      <p>
+        Hablemos un poquito de los recuerdos que tengo del lugar donde nos
+        conocimos
+      </p>
+      <TerminalWindow title="Memorias">
+        <TypewriterText
+          bbcode
+          messages={[
+            "> Quizas no tengo muchas cosas que decir al respecto de esta epoca, no interactuabamos mucho\n> Lo que si recuerdo mucho es que casi siempre nos sentabamos juntos a comer",
+            "> Tu compañia era muy agradable, y me daba risa como [shake]juzgabas mi addicion por el tajin[/shake]\n> Desde el principio fuiste muy calida en mi vida",
+            "> Incluso a medio morir en mi despedida de la chamba, me estabas acompañando y cuidando un ratito\n> [wave]Al menos recuerdo que me preguntabas mucho si estaba bien jsjs[/wave]",
+            "> Creo que fue una mezcla de tu buena voluntad, la compañia que me hiciste y lo buena persona que eres, que me hizo irte a acompañar en tu renuncia\n> Sin duda fue la mejor decision de mi vida <3",
+          ]}
+          speed={32}
+          punctuationPause={150}
+          advanceOnClick
+          clickToSkip
+          nextLabel="Toca para continuar ▾"
+        />
+      </TerminalWindow>
+    </StorySection>
+
+    <StorySection>
+      <RichTextLabel as="h2" font="pixel" text="Siendo sincero..." />
+
+      <RichTextLabel
+        as="p"
+        text="Siempre te me hiciste bonita [wave](aun recuerdo muy bien el primer dia que te vi)[/wave], si bien en ese momento aun no desarrollaba sentimientos romanticos por ti, siempre me fijaba en tus outfits cool"
+      />
+
+      <RichTextLabel
+        as="p"
+        text="Y le agradezco al universo y a la Sofi del pasado de haber aceptado ir a mi casa a comer pizza y tomar vino <3, tremendo efecto mariposa tan bonito y feliz vino a traerme la vida [shake]*se pone a llorar*[/shake]"
+      />
+    </StorySection>
+  </LetterPage>
+  <PageNavigation
+    current={1}
+    total={3}
+    previous={{ href: "/", label: "Portada" }}
+    next={{ href: "/carta/2" }}
+  >
+    <AudioPlayer
+      slot="media"
+      src={pageMusic}
+      title="The Legend"
+      variant="compact"
+      autoplay
+      startOnInteraction
+      loop
+    />
+  </PageNavigation>
+</LetterLayout>
+<style is:global>
+  .page-one {
+    --content-width: 42rem;
+    --section-space: clamp(5rem, 16vh, 10rem);
+  }
+</style>
+<style>
+  .custom-effects-label {
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid var(--color-accent);
+  }
+</style>

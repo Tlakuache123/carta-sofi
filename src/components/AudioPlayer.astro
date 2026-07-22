@@ -1,0 +1,142 @@
+---
+interface Props {
+  src: string;
+  title?: string;
+  description?: string;
+  loop?: boolean;
+  preload?: 'none' | 'metadata' | 'auto';
+  autoplay?: boolean;
+  startOnInteraction?: boolean;
+  variant?: 'card' | 'compact';
+  class?: string;
+}
+const {
+  src,
+  title = 'Audio',
+  description,
+  loop = false,
+  preload = 'metadata',
+  autoplay = false,
+  startOnInteraction = true,
+  variant = 'card',
+  class: className
+} = Astro.props;
+---
+
+<story-audio
+  class:list={['audio-player', `is-${variant}`, className]}
+  data-autoplay={autoplay}
+  data-start-on-interaction={startOnInteraction}
+>
+  <audio {src} {loop} {preload}></audio>
+  <button class="toggle" type="button" aria-label={`Reproducir ${title}`} title={title}>
+    <span class="play" aria-hidden="true">▶</span>
+    <span class="pause" aria-hidden="true">Ⅱ</span>
+  </button>
+  <div class="audio-copy">
+    <strong>{title}</strong>
+    {description && <span>{description}</span>}
+    <div class="track" aria-hidden="true"><i></i></div>
+  </div>
+  <span class="time" aria-label="Tiempo reproducido">0:00</span>
+</story-audio>
+
+<script>
+  class StoryAudio extends HTMLElement {
+    audio!: HTMLAudioElement;
+    button!: HTMLButtonElement;
+    fill!: HTMLElement;
+    time!: HTMLElement;
+    gestureHandler?: (event: Event) => void;
+
+    connectedCallback() {
+      this.audio = this.querySelector('audio')!;
+      this.button = this.querySelector('.toggle')!;
+      this.fill = this.querySelector('.track i')!;
+      this.time = this.querySelector('.time')!;
+      this.button.addEventListener('click', (event) => { event.stopPropagation(); this.toggle(); });
+      this.audio.addEventListener('play', () => { this.pauseOtherPlayers(); this.disarmInteraction(); this.sync(); });
+      this.audio.addEventListener('pause', () => this.sync());
+      this.audio.addEventListener('ended', () => this.sync());
+      this.audio.addEventListener('timeupdate', () => this.progress());
+      this.sync();
+      if (this.dataset.autoplay === 'true') this.tryPlay().then((playing) => {
+        if (!playing && this.dataset.startOnInteraction === 'true') this.armInteraction();
+      });
+    }
+
+    disconnectedCallback() { this.disarmInteraction(); }
+
+    async tryPlay() {
+      try {
+        await this.audio.play();
+        this.removeAttribute('data-blocked');
+        return true;
+      } catch {
+        this.dataset.blocked = 'true';
+        return false;
+      }
+    }
+
+    async toggle() {
+      if (this.audio.paused) await this.tryPlay();
+      else this.audio.pause();
+    }
+
+    armInteraction() {
+      if (this.gestureHandler) return;
+      this.gestureHandler = (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (target?.closest('a, button, input, select, textarea')) return;
+        this.tryPlay();
+      };
+      document.addEventListener('pointerdown', this.gestureHandler, { passive: true });
+      document.addEventListener('keydown', this.gestureHandler);
+    }
+
+    disarmInteraction() {
+      if (!this.gestureHandler) return;
+      document.removeEventListener('pointerdown', this.gestureHandler);
+      document.removeEventListener('keydown', this.gestureHandler);
+      this.gestureHandler = undefined;
+    }
+
+    pauseOtherPlayers() {
+      document.querySelectorAll<StoryAudio>('story-audio').forEach((player) => {
+        if (player !== this && player.audio && !player.audio.paused) player.audio.pause();
+      });
+    }
+
+    sync() {
+      const playing = !this.audio.paused;
+      this.classList.toggle('is-playing', playing);
+      this.button.setAttribute('aria-label', `${playing ? 'Pausar' : 'Reproducir'} ${this.querySelector('strong')?.textContent ?? 'audio'}`);
+    }
+
+    progress() {
+      const value = this.audio.duration ? this.audio.currentTime / this.audio.duration * 100 : 0;
+      this.fill.style.width = `${value}%`;
+      const seconds = Math.floor(this.audio.currentTime % 60).toString().padStart(2, '0');
+      this.time.textContent = `${Math.floor(this.audio.currentTime / 60)}:${seconds}`;
+    }
+  }
+  if (!customElements.get('story-audio')) customElements.define('story-audio', StoryAudio);
+</script>
+
+<style>
+  .audio-player { width:100%; padding:.75rem; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:.85rem; color:var(--color-ink); background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-medium); }
+  audio { display:none; }
+  .toggle { width:46px; height:46px; display:grid; place-items:center; color:var(--color-accent-contrast); background:var(--color-accent); border:0; border-radius:50%; font:700 1rem/1 var(--font-mono); font-variant-ligatures:none; cursor:pointer; touch-action:manipulation; }
+  .pause, .is-playing .play { display:none; }
+  .is-playing .pause { display:inline; }
+  .audio-copy { min-width:0; display:flex; flex-direction:column; }
+  .audio-copy strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.85rem; }
+  .audio-copy > span { color:var(--color-muted); font-size:.7rem; }
+  .track { height:3px; margin-top:.45rem; overflow:hidden; background:var(--color-surface-muted); border-radius:2px; }
+  .track i { display:block; width:0; height:100%; background:var(--color-accent); }
+  .time { color:var(--color-muted); font:tabular-nums .7rem var(--font-mono); }
+  .is-compact { width:auto; padding:0; display:block; background:transparent; border:0; }
+  .is-compact .toggle { width:44px; height:44px; color:var(--color-muted); background:transparent; border-radius:var(--radius-small); }
+  .is-compact .toggle:hover { color:var(--color-ink); background:var(--color-surface-muted); }
+  .is-compact .audio-copy, .is-compact .time { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+</style>

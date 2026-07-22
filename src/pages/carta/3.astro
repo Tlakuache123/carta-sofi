@@ -1,0 +1,104 @@
+---
+import LetterLayout from "../../layouts/LetterLayout.astro";
+import LetterPage from "../../components/LetterPage.astro";
+import StorySection from "../../components/StorySection.astro";
+import PageNavigation from "../../components/PageNavigation.astro";
+import TerminalWindow from "../../components/TerminalWindow.astro";
+import TypewriterText from "../../components/TypewriterText.astro";
+import RichTextLabel from "../../components/RichTextLabel.astro";
+import InstantPhoto from "../../components/InstantPhoto.astro";
+import PhotoRow from "../../components/PhotoRow.astro";
+import AudioPlayer from "../../components/AudioPlayer.astro";
+import boda from "../../assets/boda.jpeg";
+import sofi from "../../assets/sofi_portrait.png";
+import clau from "../../assets/clau_portrait.png";
+import pageMusic from "../../assets/music/fallen.mp3";
+---
+
+<LetterLayout
+  title="La señal — Carta para Sofi"
+  theme="contrast"
+  pageClass="page-three"
+>
+  <LetterPage page={3} totalPages={3} label="Futuro">
+    <StorySection spacing="large">
+      <h1>Futuro.</h1>
+      <p>
+        Hoy en dia estamos saliendo, y han sido 3 semanas realmente increibles
+        para mi, he conocido a tu familia, tu has conocido a la mia, he
+        encontrado contigo un lugar comodo, amoroso y calido
+      </p>
+      <RichTextLabel
+        as="p"
+        text="Y creo que nunca me habia sentido tan [shake]amado y escuchando como lo estoy siendo ahorita a tu lado[/shake]. Si hubiera sabido lo feliz que soy y lo feliz que quiero hacerte, me hubiera declarado hace tiempo."
+      />
+
+      <RichTextLabel
+        as="p"
+        text="Es una [wave]felicidad que quiero vivir el resto de mi vida[/wave], y quiero tambien poderte devolver una fraccion de la felicidad que me das, quiero verte crecer, cumplir tus sueños, celebrar juntos y verte triunfar."
+      />
+    </StorySection>
+
+    <StorySection spacing="large">
+      <RichTextLabel as="h2" text="[pulse]Conclucion...[/pulse]" />
+      <p>
+        Me gustas mucho Sofi, me gusta tu forma de ser, tu forma de vestir, tu
+        boca, tu cabello, tu voz.
+      </p>
+      <p>
+        Me gusta cuando me hablas sobre el arte, sobre tus pasiones, sobre tus
+        sueños.
+      </p>
+      <p>
+        Y me gustaria poder hacerte muy feliz, quizas no sea muy expresivo (sigo
+        trabajando en eso) pero quiero que sepas que quiero crecer contigo,
+        quiero que seamos felices juntos
+      </p>
+      <RichTextLabel
+        as="p"
+        text="ESPERA!! [shake]...creo que te llaman por la terminal..[/shake]"
+      />
+      <PhotoRow label="Recuerdos de Sofi" size="small">
+        <InstantPhoto src={sofi} alt="Retrato de Sofi" rotation={2} />
+        <InstantPhoto src={boda} alt="Retrato de Sofi" rotation={0} />
+        <InstantPhoto src={clau} alt="Retrato de Sofi" rotation={-2} />
+      </PhotoRow>
+
+      <TerminalWindow title="Amor">
+        <TypewriterText
+          bbcode
+          messages={[
+            "> Sabes cual es el colmo de un enano?... \n>[wave] Que lo pare un policia y le diga: ALTO! juas jaus jaus[/wave]",
+            "> Sabes quien me gusta muchisisisimo?... \n>[wave] Sofi Talonia[/wave]",
+            "> Sabes que te voy a preguntar ahorita?...\n>[shake]* Aqui es donde me debes preguntar: 'Que me quieres preguntar?' *[/shake]",
+            "[shake rate=10 level=2]* Se muere de nervios *[/shake]",
+          ]}
+          speed={32}
+          punctuationPause={150}
+          advanceOnClick
+          clickToSkip
+          nextLabel="Toca para continuar ▾"
+        />
+      </TerminalWindow>
+    </StorySection>
+  </LetterPage>
+  <PageNavigation current={3} total={3} previous={{ href: "/carta/2" }}>
+    <AudioPlayer
+      slot="media"
+      src={pageMusic}
+      title="The Legend"
+      variant="compact"
+      autoplay
+      startOnInteraction
+      loop
+    />
+  </PageNavigation>
+</LetterLayout>
+<style>
+  .instruction {
+    align-self: center;
+    color: var(--color-muted);
+    font-size: 0.76rem !important;
+    text-align: center;
+  }
+</style>

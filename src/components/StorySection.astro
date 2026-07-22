@@ -1,0 +1,6 @@
+---
+interface Props{id?:string;align?:'start'|'center'|'end';spacing?:'compact'|'normal'|'large';class?:string}
+const{id,align='start',spacing='normal',class:className}=Astro.props;
+---
+<section {id} class:list={['story-section',`align-${align}`,`space-${spacing}`,className]}><slot/></section>
+<style>.story-section{display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;min-width:0}.align-center{align-items:center;text-align:center}.align-end{align-items:flex-end;text-align:right}.space-compact{gap:.65rem}.space-large{gap:2.5rem}.story-section :global(h1),.story-section :global(h2){margin:0;font-family:var(--font-selected,var(--font-display));font-weight:500;line-height:1.08;letter-spacing:-.025em}.story-section :global(h1){font-size:clamp(2.5rem,10vw,5.5rem)}.story-section :global(h2){font-size:clamp(1.8rem,7vw,3.4rem)}.story-section :global(p){max-width:65ch;margin:0;font-size:clamp(1rem,3.7vw,1.16rem)}</style>

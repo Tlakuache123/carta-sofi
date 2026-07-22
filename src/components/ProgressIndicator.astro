@@ -1,0 +1,6 @@
+---
+interface Props{current:number;total:number;label?:string}
+const{current,total,label='Progreso de la historia'}=Astro.props;const percentage=Math.max(0,Math.min(100,current/total*100));
+---
+<div class="progress" role="progressbar" aria-label={label} aria-valuemin="1" aria-valuemax={total} aria-valuenow={current}><span style={`--progress:${percentage}%`}></span></div>
+<style>.progress{height:2px;background:var(--color-line)}.progress span{display:block;width:var(--progress);height:100%;background:var(--color-accent);transition:width var(--motion-normal) ease}@media(prefers-reduced-motion:reduce){.progress span{transition:none}}</style>
